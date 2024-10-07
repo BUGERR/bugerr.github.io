@@ -9,15 +9,7 @@ tags:
 ---
 
 # 手撕Transformer
-推荐阅读：
-<https://nn.labml.ai/transformers/models.html>
-<http://nlp.seas.harvard.edu/annotated-transformer/>
-<https://github.com/hyunwoongko/transformer>
-https://github.com/jadore801120/attention-is-all-you-need-pytorch
-<https://github.com/Kami-chanw/SeekDeeper>
-[d2l](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html)
-[Transformer的细枝末节](https://zhuanlan.zhihu.com/p/60821628?utm_psn=1826383472404590594)
-[BPE](https://github.com/BrightXiaoHan/MachineTranslationTutorial/blob/master/tutorials/Chapter2/BPE.md)
+
 ## 1. Tokenizer
 
 ## 2. Model details
@@ -378,3 +370,13 @@ x = layer_norm(x + residual)
 
 ### 3.2 Optimizer
 ### 3.3 Label Smoothing
+
+推荐阅读：  
+<https://nn.labml.ai/transformers/models.html>  
+<http://nlp.seas.harvard.edu/annotated-transformer/>  
+<https://github.com/hyunwoongko/transformer>  
+<https://github.com/jadore801120/attention-is-all-you-need-pytorch>  
+<https://github.com/Kami-chanw/SeekDeeper>  
+[d2l](https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html)  
+[Transformer的细枝末节](https://zhuanlan.zhihu.com/p/60821628?utm_psn=1826383472404590594)  
+[BPE](https://github.com/BrightXiaoHan/MachineTranslationTutorial/blob/master/tutorials/Chapter2/BPE.md)  
