@@ -21,13 +21,12 @@ Transformer 最初被提出用于解决 Seq2seq 翻译任务。如果要实现�
 Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`src_mask` 用于遮盖所有的 PAD token，避免它们在 attention 计算中产生影响。`tgt_mask` 除了遮盖所有 PAD token，还要防止模型在进行 next word prediction 时访问未来的词。
 
 
-### 2.1 Embedding
-#### 2.1.1 Token Embedding
+### Token Embedding
 嵌入层里，有一个 embedding 矩阵 ($$U\in R^{C\times d_{model}}$$), $$C$$ 为词典大小`vocab_size`，将输入的`src_token_id`转换成对应的 Vector，即嵌入空间的向量表示，其中语义相近的向量距离会更近。具体来说，Embedding one-hot 向量对 $$U$$ 的操作是“指定抽取”，即取出某个 Token 的向量行。
 ```python
 self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=pad_idx)
 ```
-#### 2.1.2 Positional Encoding
+### Positional Encoding
 [位置编码详解](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)  
 由于 Transformer 不像 RNN 那样具有天然的序列特性，在计算 attention 时会丢失顺序信息，因此需要引入位置编码。原文使用固定的位置编码，用正余弦组合代表一个顺序。计算公式如下：
 
@@ -111,7 +110,7 @@ positions_embed=nn.Embedding(max_len, d_model)
 self.positional_encodings = nn.Parameter(torch.zeros(max_len, 1, d_model), requires_grad=True)
 ```
 
-#### 2.1.3 Transformer Embedding
+### Transformer Embedding
 `In the embedding layers, we multiply those weights by √d_model.`
 ```python
 class TransformerEmbedding(nn.Module):
@@ -134,8 +133,7 @@ class TransformerEmbedding(nn.Module):
         pos_enc = self.pos_enc(x)
         return self.dropout(tok_emb + pos_enc) # auto-broadcast
 ```
-### 2.2 Layers
-#### 2.2.1 Mask
+### Mask
 
 <div style="text-align: center;">
   <img src="/images/mask.png" alt="mask" style="width: 300px; height: auto;">
@@ -176,7 +174,7 @@ def make_tgt_mask(tgt, pad_idx):
     return tgt_mask
 ```
 
-#### 2.2.2 Scaled Dot-Product Attention
+### Scaled Dot-Product Attention
 
 <div style="text-align: center;">
   <img src="/images/attention.png" alt="Attention" style="width: 200px; height: auto;">
@@ -203,7 +201,7 @@ def scaled_dot_product_attention(query, key, value, attn_mask=None, dropout_p=0.
     
 ```
 
-#### 2.2.3 Multi-Head Attention
+### Multi-Head Attention
 
 <div style="text-align: center;">
   <img src="/images/multihead_attention.png" alt="Multi-head Attention" style="width: 200px; height: auto;">
@@ -274,7 +272,7 @@ class MultiHeadAttention(nn.Module):
         return tensor
 ```
 
-#### 2.2.4 Position-wise Feed-Forward Networks
+### Position-wise Feed-Forward Networks
 ```python
 class PositionWiseFeedForward(nn.Module):
     def __init__(self, d_model, d_hidden, dropout=0.1):
@@ -292,7 +290,7 @@ class PositionWiseFeedForward(nn.Module):
         return x
 ```
 
-#### 2.2.5 LayerNorm
+### LayerNorm
 
 <div style="text-align: center;">
   <img src="/images/layernorm.png" alt="LayerNorm" style="width: 500px; height: auto;">
@@ -327,7 +325,7 @@ class LayerNorm(nn.Module):
 ```
 
 ### 2.3 Encoder
-#### 2.3.1 Encoder Layer
+
 Encoder 包含多个相同的层。上一层的输出 $$x_i$$ 以如下途径经过该层：
 ```python
 # attention mechanism
@@ -343,7 +341,7 @@ x = dropout(x)
 x = layer_norm(x + residual)
 ```
 ### 2.4 Decoder
-#### 2.4.1 Decoder Layer
+
 Decoder 相较于 Encoder 除了多了一层 cross-attention 之外，还使用了 masked multi-head attention。由于模型在此处不能访问未来信息，因此这种注意力机制也称为 causal self-attention。
 Decoder 同样包含多个相同的层，Encoder 最后一层的输出 `enc` 和 Decoder 上一层的输出 `dec` 以如下途径经过该层（省略了 dropout）：
 ```python
