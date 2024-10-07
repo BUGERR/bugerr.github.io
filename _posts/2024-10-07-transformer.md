@@ -49,14 +49,14 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 
 - 同时使用正弦和余弦：
 
-让模型获取相对位置，因为对任何固定偏移量 $$k$$，$$pos+k$$ 的位置编码可以被表示为 $$pos$$ 位置编码的线性方程。
+让模型获取相对位置，因为对任何固定偏移量 $$k$$, $$pos+k$$ 的位置编码可以被表示为 $$pos$$ 位置编码的线性方程。
 
 ***
 
 - $$pos$$：单词在一句话中的位置，取值范围：`[0:max_len]`
 - $$i$$：单词的维度序号，取值：`[0:d_model]`
 
-位置编码和输入序列无关，只要模型的超参数确定，`pos_enc`就确定了，是一个大小为 `[max_len * d_model]`的矩阵 ，序列输入时，取前 `[seq_len , d_model]` 的部分。然后根据广播机制与 shape 为 `[batch_size, seq_len, d_model]` 的 `token_emb` 相加，得到 Encoder 的输入，记作 $x_0$。
+位置编码和输入序列无关，只要模型的超参数确定，`pos_enc`就确定了，是一个大小为 `[max_len * d_model]`的矩阵 ，序列输入时，取前 `[seq_len , d_model]` 的部分。然后根据广播机制与 shape 为 `[batch_size, seq_len, d_model]` 的 `token_emb` 相加，得到 Encoder 的输入，记作 $$x_0$$.
 
 
 
