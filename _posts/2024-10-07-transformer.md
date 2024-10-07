@@ -32,19 +32,17 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 由于 Transformer 不像 RNN 那样具有天然的序列特性，在计算 attention 时会丢失顺序信息，因此需要引入位置编码。原文使用固定的位置编码，用正余弦组合代表一个顺序。计算公式如下：
 
 - 对于偶数维度：
-  ```math
-   \text{PE}(pos, 2i) = \sin\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)
-  ```
+  $\text{PE}(pos, 2i) = \sin\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$
 
 - 对于奇数维度：
-  ```math
+  $$
   \text{PE}(pos, 2i+1) = \cos\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right) 
-  ```
+  $$
 
 为了数值稳定性，我们对 div term 取指数和对数，即：
-```math
+$
 \text{div-term} = 10000^{2i/d_{\text{model}}} = \exp\left(\frac{2i \cdot -\log(10000)}{d_{\text{model}}}\right)
-```
+$
 
 ***
 
