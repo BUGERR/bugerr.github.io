@@ -23,7 +23,7 @@ Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`sr
 
 ### 2.1 Embedding
 #### 2.1.1 Token Embedding
-嵌入层里，有一个 embedding 矩阵 ($$U\in R^{C\times d_{model}}$#)，$$C$$ 为词典大小`vocab_size`，将输入的`src_token_id`转换成对应的 Vector，即嵌入空间的向量表示，其中语义相近的向量距离会更近。具体来说，Embedding one-hot 向量对 $$U$$ 的操作是“指定抽取”，即取出某个 Token 的向量行。
+嵌入层里，有一个 embedding 矩阵 (\\(U\in R^{C\times d_{model}}\\))，\\(C\\) 为词典大小`vocab_size`，将输入的`src_token_id`转换成对应的 Vector，即嵌入空间的向量表示，其中语义相近的向量距离会更近。具体来说，Embedding one-hot 向量对 $$U$$ 的操作是“指定抽取”，即取出某个 Token 的向量行。
 ```python
 self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=pad_idx)
 ```
@@ -35,9 +35,7 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
   $$\text{PE}(pos, 2i) = \sin\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$$
 
 - 对于奇数维度:  
-  $$
-  \text{PE}(pos, 2i+1) = \cos\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right) 
-  $$
+  $$\text{PE}(pos, 2i+1) = \cos\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$$
 
 为了数值稳定性，我们对 div term 取指数和对数，即：  
   $$\text{div-term} = 10000^{2i/d_{\text{model}}} = \exp\left(\frac{2i \cdot -\log(10000)}{d_{\text{model}}}\right)$$
@@ -181,9 +179,7 @@ def make_tgt_mask(tgt, pad_idx):
   <img src="/images/attention.png" alt="Attention" style="width: 200px; height: auto;">
 </div>
 
-$$
-\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_{key}}}\right) \cdot V
-$$
+$$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_{key}}}\right) \cdot V$$
 
 ```python
 # Efficient implementation equivalent to the following:
