@@ -28,7 +28,7 @@ Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`sr
 self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=pad_idx)
 ```
 #### 2.1.2 Positional Encoding
-[位置编码详解](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)
+[位置编码详解](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)  
 由于 Transformer 不像 RNN 那样具有天然的序列特性，在计算 attention 时会丢失顺序信息，因此需要引入位置编码。原文使用固定的位置编码，用正余弦组合代表一个顺序。计算公式如下：
 
 - 对于偶数维度:  
@@ -145,7 +145,7 @@ class TransformerEmbedding(nn.Module):
 
 在 Decoder 中, `dec_input_token` 因为输入有先后顺序，当前位置的 token 应当只能看到它自己和左侧的 token。等同于给右侧位置的每个元素加上负无穷，要保留的位置表现为一个值为1或True的下三角矩阵。
 
-`torch.Tensor.masked_fill(mask == 0, value)`
+`torch.Tensor.masked_fill(mask == 0, value)`  
 将布尔矩阵mask中值为 0 或 False 元素在 Tensor 的对应位置填充为 value。即保留了mask矩阵中值为 1 的区域。
 
 - src: pad_mask
@@ -328,7 +328,7 @@ class LayerNorm(nn.Module):
 
 ### 2.3 Encoder
 #### 2.3.1 Encoder Layer
-Encoder 包含多个相同的层。上一层的输出 $x_i$ 以如下途径经过该层：
+Encoder 包含多个相同的层。上一层的输出 $$x_i$$ 以如下途径经过该层：
 ```python
 # attention mechanism
 residual = x
