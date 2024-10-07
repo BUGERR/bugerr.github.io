@@ -45,6 +45,7 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 ```math
 \text{div-term} = 10000^{2i/d_{\text{model}}} = \exp\left(\frac{2i \cdot -\log(10000)}{d_{\text{model}}}\right)
 ```
+
 ***
 
 类比二进制表示一个数字，本质是不同位置上数字的交替变换，其中变换频率不同。
@@ -52,7 +53,9 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 - 同时使用正弦和余弦：
 
 让模型获取相对位置，因为对任何固定偏移量 $k$，$pos+k$ 的位置编码可以被表示为 $pos$ 位置编码的线性方程。
+
 ***
+
 - $pos$：单词在一句话中的位置，取值范围：`[0:max_len]`
 - $i$：单词的维度序号，取值：`[0:d_model]`
 
@@ -63,7 +66,9 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 固定的位置编码对任何序列都是相同的，虽然依靠 `max_len` 和 `d_model` 生成，但是具有可扩展性。相同位置的编码不会受 `max_len` 影响,如果输入序列长度超出 `max_len` ，只需加上对应长度的位置编码。d_model 8 —> 4，相当于保留前半部分。
 
 `We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training.`
+
 ***
+
 - 代码实现：
 
 位置矩阵和输入无关，只和该点的坐标有关，枚举 pos_enc 的行列坐标，计算赋值。
