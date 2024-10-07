@@ -1,5 +1,18 @@
 <script src="{{ base_path }}/assets/js/main.min.js"></script>
 
-<script src="https://cdn.bootcss.com/mathjax/3.0.5/es5/tex-mml-chtml.js" async></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
 
 {% include analytics.html %}
