@@ -49,7 +49,7 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 
 - 同时使用正弦和余弦：
 
-让模型获取相对位置，因为对任何固定偏移量 $k$，$pos+k$ 的位置编码可以被表示为 $pos$ 位置编码的线性方程。
+让模型获取相对位置，因为对任何固定偏移量 $$k$$，$$pos+k$$ 的位置编码可以被表示为 $$pos$$ 位置编码的线性方程。
 
 ***
 
