@@ -1,7 +1,7 @@
 ---
 title: '手撕Transformer'
 date: 2024-10-7
-permalink: /posts/2024/10/07/transformer/
+permalink: /posts/2024/10/transformer/
 tags:
   - Deep Learning
   - NLP
