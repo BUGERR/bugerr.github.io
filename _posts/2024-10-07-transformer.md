@@ -23,7 +23,7 @@ Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`sr
 
 ### 2.1 Embedding
 #### 2.1.1 Token Embedding
-嵌入层里，有一个 embedding 矩阵 ($U\in R^{C\times d_{model}}$)，$$C$$ 为词典大小`vocab_size`，将输入的`src_token_id`转换成对应的 Vector，即嵌入空间的向量表示，其中语义相近的向量距离会更近。具体来说，Embedding one-hot 向量对 $U$ 的操作是“指定抽取”，即取出某个 Token 的向量行。
+嵌入层里，有一个 embedding 矩阵 ($$U\in R^{C\times d_{model}}$#)，$$C$$ 为词典大小`vocab_size`，将输入的`src_token_id`转换成对应的 Vector，即嵌入空间的向量表示，其中语义相近的向量距离会更近。具体来说，Embedding one-hot 向量对 $$U$$ 的操作是“指定抽取”，即取出某个 Token 的向量行。
 ```python
 self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=pad_idx)
 ```
@@ -32,7 +32,7 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 由于 Transformer 不像 RNN 那样具有天然的序列特性，在计算 attention 时会丢失顺序信息，因此需要引入位置编码。原文使用固定的位置编码，用正余弦组合代表一个顺序。计算公式如下：
 
 - 对于偶数维度:  
-  \\( \text{PE}(pos, 2i) = \sin\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right) \\)
+  $$\text{PE}(pos, 2i) = \sin\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$$
 
 - 对于奇数维度:  
   $$
@@ -40,7 +40,7 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
   $$
 
 为了数值稳定性，我们对 div term 取指数和对数，即：  
-  \( \text{div-term} = 10000^{2i/d_{\text{model}}} = \exp\left(\frac{2i \cdot -\log(10000)}{d_{\text{model}}}\right) \)
+  $$\text{div-term} = 10000^{2i/d_{\text{model}}} = \exp\left(\frac{2i \cdot -\log(10000)}{d_{\text{model}}}\right)$$
 
 ***
 
@@ -52,8 +52,8 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 
 ***
 
-- $pos$：单词在一句话中的位置，取值范围：`[0:max_len]`
-- $i$：单词的维度序号，取值：`[0:d_model]`
+- $$pos$$：单词在一句话中的位置，取值范围：`[0:max_len]`
+- $$i$$：单词的维度序号，取值：`[0:d_model]`
 
 位置编码和输入序列无关，只要模型的超参数确定，`pos_enc`就确定了，是一个大小为 `[max_len * d_model]`的矩阵 ，序列输入时，取前 `[seq_len , d_model]` 的部分。然后根据广播机制与 shape 为 `[batch_size, seq_len, d_model]` 的 `token_emb` 相加，得到 Encoder 的输入，记作 $x_0$。
 
@@ -181,9 +181,9 @@ def make_tgt_mask(tgt, pad_idx):
   <img src="/images/attention.png" alt="Attention" style="width: 200px; height: auto;">
 </div>
 
-```math
+$$
 \text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_{key}}}\right) \cdot V
-```
+$$
 
 ```python
 # Efficient implementation equivalent to the following:
