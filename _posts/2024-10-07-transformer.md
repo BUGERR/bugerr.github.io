@@ -114,6 +114,7 @@ self.positional_encodings = nn.Parameter(torch.zeros(max_len, 1, d_model), requi
 
 ### Transformer Embedding
 > In the embedding layers, we multiply those weights by √d_model.
+
 ```python
 class TransformerEmbedding(nn.Module):
     def __init__(self, pad_idx, vocab_size, d_model, max_len, dropout=0.1):
