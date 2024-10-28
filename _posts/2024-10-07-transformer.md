@@ -61,7 +61,9 @@ self.tok_emb = nn.Embedding(vocab_size=vocab_size, d_model=d_model, padding_idx=
 
 固定的位置编码对任何序列都是相同的，虽然依靠 `max_len` 和 `d_model` 生成，但是具有可扩展性。相同位置的编码不会受 `max_len` 影响,如果输入序列长度超出 `max_len` ，只需加上对应长度的位置编码。d_model 8 —> 4，相当于保留前半部分。
 
-`We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training.`
+> We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training.
+
+再补充一下，关于position encoding的思考。好处主要两点。第一，sin, cos函数保证值域[-1,1]，不会抢了词向量的风头。第二，这种编码方式，哪怕不同长度的文本，同样差两个字，差值也是相同的。但是，也带来了问题。sin(pox/x)，x决定了波长，波长过大，则相邻词的差值不明显，过小的话，则长文本必然会经过几个波，导致不同位置的有着相同值。transformer虽然最后用了不同维度不同波长，sin cos轮着来，来解决这个问题。但个人感觉并没有特别strong的数学理论依据，所以全用sin，全用cos说不定也是可以的。以及后期bert用的position embeding也说明这种方法不一定真的特别好用。
 
 ***
 
@@ -111,7 +113,7 @@ self.positional_encodings = nn.Parameter(torch.zeros(max_len, 1, d_model), requi
 ```
 
 ### Transformer Embedding
-`In the embedding layers, we multiply those weights by √d_model.`
+> In the embedding layers, we multiply those weights by √d_model.
 ```python
 class TransformerEmbedding(nn.Module):
     def __init__(self, pad_idx, vocab_size, d_model, max_len, dropout=0.1):
@@ -273,6 +275,10 @@ class MultiHeadAttention(nn.Module):
 ```
 
 ### Position-wise Feed-Forward Networks
+
+FFN相当于将每个位置的Attention结果映射到一个更大维度的特征空间，然后使用ReLU引入非线性进行筛选，最后恢复回原始维度。
+需要说明的是，在抛弃了LSTM结构后，FFN中的ReLU成为了一个主要的能提供非线性变换的单元。
+
 ```python
 class PositionWiseFeedForward(nn.Module):
     def __init__(self, d_model, d_hidden, dropout=0.1):
@@ -295,6 +301,23 @@ class PositionWiseFeedForward(nn.Module):
 <div style="text-align: center;">
   <img src="/images/layernorm.png" alt="LayerNorm" style="width: 500px; height: auto;">
 </div>
+
+
+$$ h_i = f(a_i) $$
+$$ h'_i = f(g_i/σ_i(a_i-u_i) + b_i) $$
+
+这样做的第一个好处（平移）是，可以让激活值落入 $$ f() $$ 的梯度敏感区间。梯度更新幅度变大，模型训练加快。第二个好处是，可以将每一次迭代的数据调整为相同分布（相当于“白化”），消除极端值，提升训练稳定性。
+
+然而，在梯度敏感区内，隐层的输出接近于“线性”，模型表达能力会大幅度下降。引入 gain 因子和 bias 因子，为规范化后的分布再加入一点“个性”。需要注意的是，$$g_i$$和$$b_i$$ 作为模型参数训练得到，$$u_i$$和 $$σ_i$$在限定的数据范围内统计得到。BN 和 LN 的差别就在这里，前者在某一个 Batch 内统计某特定神经元节点的输出分布（跨样本），后者在某一次迭代更新中统计同一层内的所有神经元节点的输出分布（同一样本下）。
+
+那么，为什么要舍弃 BN 改用 LN 呢？朴素版的 BN 是为 CNN 任务提出的，需要较大的 BatchSize 来保证统计量的可靠性，并在训练阶段记录全局的 $$u$$和 $$σ$$供预测任务使用。对于天然变长的 RNN 任务，需要对每个神经元进行在每个时序的状态进行统计。这不仅把原本非常简单的 BN 流程变复杂，更导致偏长的序列位置统计量不足。相比之下，LN 的使用限制就小很多，不需要在预测中使用训练阶段的统计量，即使 BatchSize = 1 也毫无影响。
+
+个人理解，对于 CNN 图像类任务，每个卷积核可以看做特定的特征抽取器，对其输出做统计是有理可循的；对于 RNN 序列类任务，统计特定时序每个隐层的输出，毫无道理可言——序列中的绝对位置并没有什么显著的相关性。相反，同一样本同一时序同一层内，不同神经元节点处理的是相同的输入，在它们的输出间做统计合理得多。
+
+从上面的分析可以看出，Normalization 通常被放在非线性化函数之前。
+
+总体的原则是在“非线性之前单独处理各个矩阵”。对于 Transformer，主要的非线性部分在 FFN（ReLU） 和 Self-Attention（Softmax） 的内部，已经没有了显式的循环，但这些逐个叠加的同构子层像极了 GRU 和 LSTM 等 RNN 单元。信息的流动由沿着时序变成了穿过子层，把 LN 设置在每个子层的输出位置，意义上已经不再是“落入sigmoid 的梯度敏感空间来加速训练”了，个人认为更重要的是前文提到的“白化”—— 让每个词的向量化数值更加均衡，以消除极端情况对模型的影响，获得更稳定的深层网络结构 —— 就像这些词从 Embdding 层出来时候那样，彼此只有信息的不同，没有能量的多少。在和之前的 TWWT 实验一样的配置中，删除了全部的 LN 层后模型不再收敛。LN 正如 LSTM 中的tanh，它为模型提供非线性以增强表达能力，同时将输出限制在一定范围内。 因此，对于 Transformer 来说，LN 的效果已经不是“有多好“的范畴了，而是“不能没有”。
+
 
 ```python
 
@@ -365,6 +388,23 @@ x = layer_norm(x + residual)
 [Attention is all you need](https://arxiv.org/pdf/1706.03762) Sec 5.1 提到，训练集使用的是 WMT 2014，每一个训练批次有大约 25k source tokens 和 25k target tokens，结果产生了 6,230 个批次。平均批次大小为 724，平均长度为 45 个 tokens。考虑到 GPU 显存不足，为了确保每个批次都有足够的 tokens，因此需要采取梯度累积策略，每 `update_freq` 轮才更新一次梯度。
 
 论文还提到对 base transformer 进行了 100,000 次迭代训练，这应该对应于 16 个 epochs。
+
+
+学习率更新更新这块，我理解，核心点在于大batch下的优化，bert的batch能有7w，而之所以要用大batch是因为transformer这种参数这么多的网络，少量样本太容易过拟合，必须要amount of data才能训练好参数。海量数据还用小batch训练速度实在太慢，但batch一大，会带来新问题。第一，batch大了，梯度算的准了，很容易直奔局部最优点去了，而小batch因为没那么准，有震荡，所以反而不容易陷入局部最优。第二，batch大了，同样的样本，迭代的步数就小了，而学习率在使用同样算法的情况下，基本上是不变的，加上越是底层，梯度传播过去就越大概率变小（梯度消失嘛），导致更难收敛。所以，lamd就是基于adam，学习率还考虑了当前层网络的参数，这样高层的网络更平滑，底层的网络也能加速收敛
+
+Transformer 的学习率更新公式叫作“noam”，它将 warmup 和 decay 两个部分组合在一起，总体趋势是先增加后减小。据我所知，Transformer 是第一个使用类似设置的 NLP 模型。
+
+第一个问题，为什么要额外设置一个 warmup 的阶段呢？虽然 NLP 中鲜有相关尝试，但是 CV 领域常常会这样做。在《Deep Residual Learning for Image Recognition》（残差网络出处）中，作者训练 110 层的超深网络时就用过类似策略：
+
+> In this case, we find that the initial learning rate of 0.1 is slightly too large to start converging. So we use 0.01 to warm up the training until the training error is below 80% (about 400 iterations), and then go back to 0.1 and continue training.
+
+对于 Transformer 这样的大型网络，在训练初始阶段，模型尚不稳定，较大的学习率会增加收敛难度。因此，使用较小的学习率进行 warmup，等 loss 下降到一定程度后，再恢复回常规学习率。
+
+第二个问题，为什么要用线性增加的 warmup 方式？在《Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour》有专门讨论 warmup 的小节。这篇文章将 ImageNet 上的训练时间从 Batchsize 256 in 29 hours 缩短到 Batchsize 8192 in 1 hour，而完全不损失模型精度。在解决超大 Batchsize 难优化问题时，warmup 是一个极其重要的策略。其中，线性增加的方法称为 gradual warmup，使用固定值的方法称为 constant warmup。后者的缺点是在 warmup 阶段结束时，学习率会有一次跳动抬升。
+
+> large minibatch sizes are challenged by optimization difficulties in early training and if these difficulties are addressed, the training error and its curve can match a small minibatch baseline closely.
+
+作者认为，为了实现超大Batchsize，需要保证“k 个 minibatch , size = n , lr = η” 和 “1 个 minibatch , size = kn , lr = kη”的梯度近似相等。但是在模型变化剧烈时，这个等式会被打破。warmup 可以有效缓解这个问题。
 
 ### 3.2 Optimizer
 ### 3.3 Label Smoothing
