@@ -1,5 +1,5 @@
 ---
-title: '手撕Transformer'
+title: 'Vaniila Transformer'
 date: 2024-10-7
 permalink: /posts/2024/10/transformer/
 tags:
@@ -8,7 +8,7 @@ tags:
   - Seq2seq
 ---
 
-# 手撕Transformer
+# 手撕 Transformer
 
 ## 1. Tokenizer
 
