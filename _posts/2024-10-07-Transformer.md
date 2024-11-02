@@ -1,7 +1,7 @@
 ---
 title: 'Vaniila Transformer'
 date: 2024-10-7
-permalink: /posts/2024/10/transformer/
+permalink: /posts/2024/10/Transformer/
 tags:
   - Deep Learning
   - NLP
