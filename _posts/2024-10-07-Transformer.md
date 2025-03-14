@@ -18,7 +18,7 @@ Transformer 最初被提出用于解决 Seq2seq 翻译任务。如果要实现�
   <img src="/images/transformer.png" alt="Transformer" style="width: 300px; height: auto;">
 </div>
 
-Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`src_mask` 用于遮盖所有的 PAD token，避免它们在 attention 计算中产生影响。`tgt_mask` 除了遮盖所有 PAD token，还要防止模型在进行 next word prediction 时访问未来的词。
+Encoder 和 Decoder 分别使用了两种 mask，`src_mask` 和 `tgt_mask`。`src_mask` 用于遮盖所有的 PAD token，避免它们在 attention 计算中产生影响，用于src和corss-attention（其中tgt是Q，src是KV）。`tgt_mask` 除了遮盖所有 PAD token，还要防止模型在进行 next word prediction 时访问未来的词。只用在tgt的自注意力。
 
 
 ### Token Embedding
