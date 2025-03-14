@@ -13,7 +13,7 @@ tags:
 ## 1. Tokenizer
 
 ## 2. Model details
-Transformer 最初被提出用于解决 Seq2seq 翻译任务。如果要实现英文到德文的翻译，那么我们称英文为源语言，德文为目标语言。Transformer 的结构如下图所示，源文本的 embedding 与 positional encoding 相加后输入到 Encoder，经过 N 层 Encoder layer 后，输出在 Decoder 的 cross attention 中进行交互。目标文本的 embedding 同样与 positional encoding 相加后输入到 Decoder，Decoder 的输出通常会再经过一个线性层（具体取决于任务要求）。训练过程本质上是让模型学会什么时候结束这段话，学会何时输出<EOS>，相当于测试时贪婪的最后一步。src_input是<SOS>en_tokens<EOS>，tgt_input是<SOS>de_tokens，gt是de_tokens<EOS>.
+Transformer 最初被提出用于解决 Seq2seq 翻译任务。如果要实现英文到德文的翻译，那么我们称英文为源语言，德文为目标语言。Transformer 的结构如下图所示，源文本的 embedding 与 positional encoding 相加后输入到 Encoder，经过 N 层 Encoder layer 后，输出在 Decoder 的 cross attention 中进行交互。目标文本的 embedding 同样与 positional encoding 相加后输入到 Decoder，Decoder 的输出通常会再经过一个线性层（具体取决于任务要求）。训练过程本质上是让模型学会什么时候结束这段话，学会何时输出`<EOS>`，相当于测试时贪婪的最后一步。src_input是`<SOS>`en_tokens`<EOS>`，tgt_input是`<SOS>`de_tokens，gt是de_tokens`<EOS>`.
 <div style="text-align: center;">
   <img src="/images/transformer.png" alt="Transformer" style="width: 300px; height: auto;">
 </div>
