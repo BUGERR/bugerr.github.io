@@ -1,11 +1,11 @@
 ---
-title: '论文阅读: BERT'
+title: '论文阅读: CCV'
 date: 2025-04-19
-permalink: /posts/2025/04/BERT/
+permalink: /posts/2025/04/CCV/
 tags:
   - Deep Learning
-  - BERT
-  - NLP
+  - 
+  - 
 ---
 
 # 读 CCV ｜ 用于情景医学图像分割的循环上下文验证
