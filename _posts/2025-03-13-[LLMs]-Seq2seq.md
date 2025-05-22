@@ -9,6 +9,7 @@ tags:
 ---
 
 # Sequence to Sequence Learning with Neural Networks
+
 本篇是用 spaCy 和 torchtext 库预处理 sequence text 的教程，主要关注处理流程和细节。以英语德语翻译为例，当然也可以扩展到其他seq2seq任务，例如内容总结，从一个序列到更短序列。
 
 [TOC]
