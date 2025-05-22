@@ -1,3 +1,14 @@
+---
+title: '采样'
+date: 2025-05-22
+permalink: /posts/2025/05/Sample/
+tags:
+  - Temperature
+  - Top-k
+  - Top-p
+---
+
+
 # sample
 - 采样目的：生成文本时，从预测结果中选出高概率的候选词，避免随机选到低概率词导致的语句不合理，同时保留一定多样性。
 - 先用temperature 调整分布平滑度，然后 top-k + top-p 控制候选范围
