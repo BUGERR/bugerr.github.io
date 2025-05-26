@@ -25,7 +25,7 @@ tags:
 [Transformer常见问题与回答总结](https://zhuanlan.zhihu.com/p/496012402?utm_medium=social&utm_oi=629375409599549440)
 
 <div style="text-align: center;">
-  <img src="/images/Transformer.png" style="width: auto; height: auto;">
+  <img src="/images/transformer.png" style="width: auto; height: auto;">
 </div>
 
 ## 摘要
@@ -57,7 +57,7 @@ tags:
 2. 给定 z，生成第一个输出 y1，拿到 y1 后生成 y2，要生成 y_t 需要拿到之前所有的 y1 到 y_t-1，在翻译时是一个词一个词往外蹦。在过去时刻的输出也会作为当前时刻的输入。
 
 <div style="text-align: center;">
-  <img src="/images/Transformer.png" style="width: auto; height: auto;">
+  <img src="/images/transformer.png" style="width: auto; height: auto;">
 </div>
 
 ### 总体
